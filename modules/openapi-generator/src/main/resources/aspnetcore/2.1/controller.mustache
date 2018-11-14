@@ -1,9 +1,6 @@
-{{>partial_header}}
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;{{#useSwashbuckle}}
-using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.SwaggerGen;{{/useSwashbuckle}}
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using {{packageName}}.Attributes;
@@ -15,8 +12,16 @@ namespace {{packageName}}.Controllers
     /// {{description}}
     /// </summary>{{#description}}
     [Description("{{description}}")]{{/description}}
+    [ApiController]
     public class {{classname}}Controller : ControllerBase
-    { {{#operation}}
+    {
+        private readonly I{{classname}}Service svc;
+        public {{classname}}Controller(I{{classname}}Service svc)
+        {
+            this.svc = svc;
+        }
+        
+         {{#operation}}
         /// <summary>
         /// {{#summary}}{{summary}}{{/summary}}
         /// </summary>{{#notes}}
@@ -25,31 +30,53 @@ namespace {{packageName}}.Controllers
         /// <response code="{{code}}">{{message}}</response>{{/responses}}
         [{{httpMethod}}]
         [Route("{{{basePathWithoutHost}}}{{{path}}}")]
-        [ValidateModelState]{{#useSwashbuckle}}
-        [SwaggerOperation("{{operationId}}")]{{#responses}}{{#dataType}}
-        [SwaggerResponse(statusCode: {{code}}, type: typeof({{&dataType}}), description: "{{message}}")]{{/dataType}}{{^dataType}}{{/dataType}}{{/responses}}{{/useSwashbuckle}}
-        public virtual IActionResult {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        { {{#responses}}
-{{#dataType}}
-            //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}}, default({{&dataType}}));
-{{/dataType}}
-{{^dataType}}
-            //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}});
-{{/dataType}}{{/responses}}
-{{#returnType}}
-            string exampleJson = null;
-            {{#examples}}
-            exampleJson = "{{{example}}}";
-            {{/examples}}
-            {{#isListCollection}}{{>listReturn}}{{/isListCollection}}{{^isListCollection}}{{#isMapContainer}}{{>mapReturn}}{{/isMapContainer}}{{^isMapContainer}}{{>objectReturn}}{{/isMapContainer}}{{/isListCollection}}
-            {{!TODO: defaultResponse, examples, auth, consumes, produces, nickname, externalDocs, imports, security}}
-            //TODO: Change the data returned
-            return new ObjectResult(example);{{/returnType}}{{^returnType}}
-            throw new NotImplementedException();{{/returnType}}
+        public {{#asyncServer}}await Task<IActionResult>{{/asyncServer}}
+        {{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}(
+            {{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, 
+            {{/hasMore}}{{/allParams}})
+        {
+            {{#isGet}}
+            var result = return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+            if(result == null)
+                return NotFound();
+
+            return Ok(result);{{/isGet}}{{#isPost}}
+            var result = return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+            if(result == null)
+                return UnprocessableEntity();
+
+            return Created(result);{{/isPost}}{{#isDelete}}
+            var error = return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+            if(error != null)
+                return UnprocessableEntity(error); //???
+
+            return NoContent();{{/isDelete}}{{#isPut}}
+            var error = return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+            if(error != null)
+                return UnprocessableEntity(error); //???
+
+            return NoContent();{{/isPut}}{{#isPatch}}
+            var error = return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+            if(error != null)
+                return UnprocessableEntity(error); //???
+
+            return NoContent();{{/isPatch}}         
         }
         {{/operation}}
     }
+
+    public interface I{{classname}}Service
+    {        
+        {{#operation}}/// <summary>
+        /// {{notes}}
+        /// </summary>
+        /// <param name="context">Context of request</param>
+        {{#allParams}}/// <param name="{{paramName}}">{{description}}{{^required}} (optional{{#defaultValue}}, default to {{.}}{{/defaultValue}}){{/required}}</param>
+        {{/allParams}}/// <returns>{{#returnType}}{{returnType}}{{/returnType}}</returns>
+        {{#asyncServer}}{{#returnType}}Task<{{{returnType}}}>{{/returnType}}{{^returnType}}Task{{/returnType}}{{/asyncServer}}{{^asyncServer}}{{#returnType}}{{&returnType}}{{/returnType}}{{^returnType}}void{{/returnType}}{{/asyncServer}} {{operationId}}({{>paramsList}});{{#hasMore}}
+
+        {{/hasMore}}{{/operation}}
+    }
+
 {{/operations}}
 }

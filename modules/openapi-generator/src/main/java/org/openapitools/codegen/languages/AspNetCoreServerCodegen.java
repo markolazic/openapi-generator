@@ -244,6 +244,22 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         // Converts, for example, PUT to HttpPut for controller attributes
         operation.httpMethod = "Http" + operation.httpMethod.substring(0, 1) + operation.httpMethod.substring(1).toLowerCase(Locale.ROOT);
+        operation.isGet = operation.httpMethod.equals("HttpGet");
+        operation.isPost = operation.httpMethod.equals("HttpPost");
+        operation.isPut = operation.httpMethod.equals("HttpPut");
+        operation.isPatch = operation.httpMethod.equals("HttpPatch");
+        operation.isDelete = operation.httpMethod.equals("HttpDelete");
+
+        if(operation.isPatch) {
+            CodegenParameter patchBodyParam = operation.bodyParam;
+            operation.allParams.remove(patchBodyParam);
+            operation.bodyParams.remove(patchBodyParam);
+
+            patchBodyParam.dataType = "PatchDocument<" + patchBodyParam.dataType + ">";
+
+            operation.bodyParams.add(patchBodyParam);
+            operation.allParams.add(patchBodyParam);
+        }
     }
 
     @Override
