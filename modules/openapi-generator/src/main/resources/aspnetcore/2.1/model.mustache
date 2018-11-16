@@ -130,7 +130,21 @@ namespace {{packageName}}.Models
         #pragma warning restore 1591
         #endregion Operators
     }
+
+    public class {{classname}}Validator : AbstractValidator<{{classname}}>
+    {
+        public {{classname}}Validator()
+        {
+            {{#vars}}
+            {{#required}}
+            RuleFor(x => x.{{name}}).NotEmpty();
+            {{/required}}
+            {{/vars}}
+        }
+    }
+
 {{/isEnum}}
+
 {{/model}}
 {{/models}}
 }
