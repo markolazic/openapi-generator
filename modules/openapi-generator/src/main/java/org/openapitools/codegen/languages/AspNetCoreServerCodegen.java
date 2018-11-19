@@ -249,10 +249,11 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         if(operation.isPatch) {
             CodegenParameter patchBodyParam = operation.bodyParam;
-            operation.allParams.remove(patchBodyParam);
+
+            operation.allParams.removeIf(p->p.isBodyParam);
             operation.bodyParams.remove(patchBodyParam);
 
-            patchBodyParam.dataType = "PatchDocument<" + patchBodyParam.dataType + ">";
+            patchBodyParam.dataType = "JsonPatchDocument<" + patchBodyParam.dataType + ">";
 
             operation.bodyParams.add(patchBodyParam);
             operation.allParams.add(patchBodyParam);
