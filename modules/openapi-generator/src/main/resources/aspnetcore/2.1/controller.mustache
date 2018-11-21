@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using {{packageName}}.Attributes;
 using {{packageName}}.Models;
-using Optional;
+using Optional.Extensions.AspNetCore;
+using FluentValidator;
 
 namespace {{packageName}}.Controllers
 { {{#operations}}
@@ -33,14 +33,11 @@ namespace {{packageName}}.Controllers
         /// <response code="{{code}}">{{message}}</response>{{/responses}}
         [{{httpMethod}}]
         [Route("{{{path}}}", Name = "{{operationId}}")]
-        public {{#asyncServer}}await Task<IActionResult>{{/asyncServer}}
-        
-        {{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        {
-            {{#isGet}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrEror();
+        public {{#asyncServer}}await Task<IActionResult>{{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        { {{#isGet}}
+           return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
            {{/isGet}}{{#isPost}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("Get{{classname}}ById", returned => new { id = returned.Id });
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("{{createdAtUrl}}", returned => new { {{resourceCreatedAtId}} = returned.{{resourceCreatedAtId}} });
             {{/isPost}}{{#isDelete}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
             {{/isDelete}}{{#isPut}}
@@ -49,11 +46,9 @@ namespace {{packageName}}.Controllers
                 return UnprocessableEntity(error); //???
 
             return NoContent();{{/isPut}}{{#isPatch}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
-            {{/isPatch}}
-            }
-     
-        {{/operation}}
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();{{/isPatch}}
+        }
+            {{/operation}}
     }
 
     public interface I{{classname}}Service

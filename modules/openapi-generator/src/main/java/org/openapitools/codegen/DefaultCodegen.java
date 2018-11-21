@@ -27,6 +27,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.callbacks.Callback;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.headers.Header;
+import io.swagger.v3.oas.models.links.Link;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Content;
@@ -2516,6 +2517,11 @@ public class DefaultCodegen implements CodegenConfig {
         op.isRestfulUpdate = op.isRestfulUpdate();
         op.isRestfulDestroy = op.isRestfulDestroy();
         op.isRestful = op.isRestful();
+
+        if(op.isRestfulCreate) {
+            op.createdAtUrl = op.ResourceCreatedAtUrl(operation);
+            op.resourceCreatedAtId = op.ResourceCreatedAtItId(operation);
+        }
 
         return op;
     }
