@@ -18,6 +18,8 @@
 package org.openapitools.codegen;
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.links.Link;
 import io.swagger.v3.oas.models.tags.Tag;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class CodegenOperation {
             isRestfulIndex, isRestfulShow, isRestfulCreate, isRestfulUpdate, isRestfulDestroy,
             isRestful, isDeprecated, isCallbackRequest, isGet, isPost, isPut, isPatch, isDelete;
     public String path, operationId, returnType, httpMethod, returnBaseType,
-            returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse; 
+            returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse, createdAtUrl,resourceCreatedAtId;
     public CodegenDiscriminator discriminator;
     public List<Map<String, String>> consumes, produces, prioritizedContentTypes;
     public CodegenParameter bodyParam;
@@ -189,7 +191,7 @@ public class CodegenOperation {
      * @return true if act as Restful create method, false otherwise
      */
     public boolean isRestfulCreate() {
-        return "POST".equalsIgnoreCase(httpMethod) && "".equals(pathWithoutBaseName());
+        return "POST".equalsIgnoreCase(httpMethod);
     }
 
     /**
@@ -432,5 +434,18 @@ public class CodegenOperation {
         return result;
     }
 
+    public String ResourceCreatedAtUrl(Operation operation)
+    {
+        return  GetLinkForCreatedResource(operation).getOperationId();
+    }
 
+    public String ResourceCreatedAtItId(Operation operation)
+    {
+        return GetLinkForCreatedResource(operation).getParameters().keySet().iterator().next();
+    }
+
+    private Link GetLinkForCreatedResource(Operation operation)
+    {
+        return operation.getResponses().get("201").getLinks().get("location");
+    }
 }

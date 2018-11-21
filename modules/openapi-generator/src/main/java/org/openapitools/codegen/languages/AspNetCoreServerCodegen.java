@@ -19,6 +19,9 @@ package org.openapitools.codegen.languages;
 
 import com.samskivert.mustache.Mustache;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.links.Link;
+import io.swagger.v3.oas.models.media.Schema;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.utils.URLPathUtils;
 import org.slf4j.Logger;
@@ -269,5 +272,11 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     @Override
     public String toRegularExpression(String pattern) {
         return escapeText(pattern);
+    }
+
+    @Override
+    public CodegenOperation fromOperation(String path, String httpMethod, Operation operation, Map<String, Schema> schemas) {
+        return super.fromOperation(path, httpMethod, operation, schemas);
+
     }
 }

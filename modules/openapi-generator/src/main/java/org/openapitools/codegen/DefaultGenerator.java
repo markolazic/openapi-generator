@@ -986,7 +986,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                 config.addOperationToGroup(config.sanitizeTag(tag.getName()), resourcePath, operation, codegenOperation, operations);
 
                 List<SecurityRequirement> securities = operation.getSecurity();
-                if (securities != null && securities.isEmpty()) {
+                 if (securities != null && securities.isEmpty()) {
                     continue;
                 }
                 Map<String, SecurityScheme> authMethods = getAuthMethods(securities, securitySchemes);
