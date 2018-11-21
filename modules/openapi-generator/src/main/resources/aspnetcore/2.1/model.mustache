@@ -139,6 +139,37 @@ namespace {{packageName}}.Models
             {{#required}}
             RuleFor(x => x.{{name}}).NotEmpty();
             {{/required}}
+            {{#maximum}}
+            {{#exclusiveMaximum}}
+            RuleFor(x => x.{{name}}).LessThan({{maximum}});
+            {{/exclusiveMaximum}}
+            {{^exclusiveMaximum}}
+            RuleFor(x => x.{{name}}).LessThanOrEqualTo({{maximum}});
+            {{/exclusiveMaximum}}
+            {{/maximum}}
+            {{#minimum}}
+            {{#exclusiveMinimum}}
+            RuleFor(x => x.{{name}}).GreaterThan({{minimum}});
+            {{/exclusiveMinimum}}
+            {{^exclusiveMinimum}}
+            RuleFor(x => x.{{name}}).GreaterThanOrEqualTo({{minimum}});
+            {{/exclusiveMinimum}}
+            {{/minimum}}
+            {{#maxLength}}
+            RuleFor(x => x.{{name}}).MaximumLength({{maxLength}});
+            {{/maxLength}}
+            {{#minLength}}
+            RuleFor(x => x.{{name}}).MinimumLength({{minLength}});
+            {{/minLength}}
+            {{#maxItems}}
+            RuleFor(x => x.{{name}}.Count()).LessThanOrEqual({{maxItems}});
+            {{/maxItems}}
+            {{#minItems}}
+            RuleFor(x => x.{{name}}.Count()).GreaterThanOrEqual({{minItems}});
+            {{/minItems}}
+            {{#pattern}}
+            RuleFor(x => x.{{name}}).Matches("{{pattern}}");
+            {{/pattern}}
             {{/vars}}
         }
     }
