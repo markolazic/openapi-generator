@@ -439,9 +439,9 @@ public class CodegenOperation {
         return  GetLinkForCreatedResource(operation).getOperationId();
     }
 
-    public String ResourceCreatedAtItId(Operation operation)
+    public String ResourceCreatedAtId(Operation operation)
     {
-        return GetLinkForCreatedResource(operation).getParameters().keySet().iterator().next();
+        return GetLinkForCreatedResource(operation).getParameters().values().iterator().next();
     }
 
     private Link GetLinkForCreatedResource(Operation operation)

@@ -2520,7 +2520,7 @@ public class DefaultCodegen implements CodegenConfig {
 
         if(op.isRestfulCreate) {
             op.createdAtUrl = op.ResourceCreatedAtUrl(operation);
-            op.resourceCreatedAtId = op.ResourceCreatedAtItId(operation);
+            op.resourceCreatedAtId = op.ResourceCreatedAtId(operation);
         }
 
         return op;

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using {{packageName}}.Models;
 using Optional.Extensions.AspNetCore;
 using FluentValidator;
+using PaymentechAuthorizationService.Helpers;
 
 namespace {{packageName}}.Controllers
 { {{#operations}}
@@ -18,9 +18,11 @@ namespace {{packageName}}.Controllers
     public class {{classname}}Controller : ControllerBase
     {
         private readonly I{{classname}}Service service;
-        public {{classname}}Controller(I{{classname}}Service service)
+        private readonly OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter;
+        public {{classname}}Controller(I{{classname}}Service service, OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter)
         {
             this.service = service;
+            this.runtimeExpressionInterpreter = runtimeExpressionInterpreter;
         }
         
          {{#operation}}
@@ -37,7 +39,7 @@ namespace {{packageName}}.Controllers
         { {{#isGet}}
            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
            {{/isGet}}{{#isPost}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("{{createdAtUrl}}", returned => new { {{resourceCreatedAtId}} = returned.{{resourceCreatedAtId}} });
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("{{createdAtUrl}}", returned => runtimeExpressionInterpreter.GetValue(returned, "{{resourceCreatedAtId}}"));
             {{/isPost}}{{#isDelete}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
             {{/isDelete}}{{#isPut}}
