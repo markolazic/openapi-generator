@@ -162,10 +162,10 @@ namespace {{packageName}}.Models
             RuleFor(x => x.{{name}}).MinimumLength({{minLength}});
             {{/minLength}}
             {{#maxItems}}
-            RuleFor(x => x.{{name}}.Count()).LessThanOrEqual({{maxItems}});
+            RuleFor(x => x.{{name}}.Count()).LessThanOrEqualTo({{maxItems}});
             {{/maxItems}}
             {{#minItems}}
-            RuleFor(x => x.{{name}}.Count()).GreaterThanOrEqual({{minItems}});
+            RuleFor(x => x.{{name}}.Count()).GreaterThanOrEqualTo({{minItems}});
             {{/minItems}}
             {{#pattern}}
             RuleFor(x => x.{{name}}).Matches("{{pattern}}");
