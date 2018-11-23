@@ -2,69 +2,60 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using {{packageName}}.Models;
+using Optional;
 using Optional.Extensions.AspNetCore;
-using FluentValidator;
-using PaymentechAuthorizationService.Helpers;
+using FluentValidation;
+using {{packageName}}.Helpers;
+using {{packageName}}.Models;
+
 
 namespace {{packageName}}.Controllers
 { {{#operations}}
     /// <summary>
     /// {{description}}
-    /// </summary>{{#description}}
-    [Description("{{description}}")]{{/description}}
+    ///</summary>
+    {{#description}}[Description("{{description}}")]{{/description}}
     [ApiController]
     [Route("{{{basePathWithoutHost}}}")]
-    public class {{classname}}Controller : ControllerBase
+    public class {{classname}} : ControllerBase
     {
         private readonly I{{classname}}Service service;
         private readonly OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter;
-        public {{classname}}Controller(I{{classname}}Service service, OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter)
+        public {{classname}}(I{{classname}}Service service, OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter)
         {
             this.service = service;
             this.runtimeExpressionInterpreter = runtimeExpressionInterpreter;
         }
-        
-         {{#operation}}
-       
-        /// <summary>
-        /// {{#summary}}{{summary}}{{/summary}}
-        /// </summary>{{#notes}}
-        /// <remarks>{{notes}}</remarks>{{/notes}}{{#allParams}}
-        /// <param name="{{paramName}}">{{description}}</param>{{/allParams}}{{#responses}}
-        /// <response code="{{code}}">{{message}}</response>{{/responses}}
+
+{{#operation}}
         [{{httpMethod}}]
         [Route("{{{path}}}", Name = "{{operationId}}")]
-        public {{#asyncServer}}await Task<IActionResult>{{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        public {{#asyncServer}}await Task<IActionResult>
+            {{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
         { {{#isGet}}
-           return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
-           {{/isGet}}{{#isPost}}
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
+            {{/isGet}}{{#isPost}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("{{createdAtUrl}}", returned => runtimeExpressionInterpreter.GetValue(returned, "{{resourceCreatedAtId}}"));
             {{/isPost}}{{#isDelete}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
             {{/isDelete}}{{#isPut}}
             var error = {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
             if(error != null)
-                return UnprocessableEntity(error); //???
+            return UnprocessableEntity(error); //???
 
             return NoContent();{{/isPut}}{{#isPatch}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();{{/isPatch}}
         }
-            {{/operation}}
+{{/operation}}
     }
 
     public interface I{{classname}}Service
-    {        
-        {{#operation}}/// <summary>
-        /// {{notes}}
-        /// </summary>
-        /// <param name="context">Context of request</param>
-        {{#allParams}}/// <param name="{{paramName}}">{{description}}{{^required}} (optional{{#defaultValue}}, default to {{.}}{{/defaultValue}}){{/required}}</param>
-        {{/allParams}}/// <returns>{{#returnType}}Option<{{returnType}}, ErrorCode>{{/returnType}}</returns>
-        {{#asyncServer}}{{#returnType}}Task<{{{returnType}}}>{{/returnType}}{{^returnType}}Task{{/returnType}}{{/asyncServer}}{{^asyncServer}}{{#returnType}}Option<{{&returnType}}, ErrorCode>{{/returnType}}{{^returnType}}void{{/returnType}}{{/asyncServer}} {{operationId}}({{>paramsList}});{{#hasMore}}
-
-        {{/hasMore}}{{/operation}}
+    {
+        {{#operation}}
+        {{#asyncServer}}{{#returnType}}Task<{{{returnType}}}>{{/returnType}}{{^returnType}}Task{{/returnType}}{{/asyncServer}}
+        {{^asyncServer}}{{#returnType}}Option<{{&returnType}}, ErrorCode>{{/returnType}}{{^returnType}}void{{/returnType}}{{/asyncServer}}{{operationId}}({{>paramsList}});{{#hasMore}}
+            {{/hasMore}}{{/operation}}
     }
 
-{{/operations}}
+    {{/operations}}
 }

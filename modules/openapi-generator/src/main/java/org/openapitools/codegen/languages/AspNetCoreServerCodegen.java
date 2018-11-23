@@ -119,6 +119,13 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     }
 
     @Override
+    public String toApiName(String name) {
+        if (name.length() == 0) {
+            return "DefaultController";
+        }
+        return name + "Controller";
+    }
+    @Override
     public String getName() {
         return "aspnetcore";
     }
