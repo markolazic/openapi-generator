@@ -434,18 +434,31 @@ public class CodegenOperation {
         return result;
     }
 
-    public String ResourceCreatedAtUrl(Operation operation)
-    {
-        return  GetLinkForCreatedResource(operation).getOperationId();
+    public String ResourceCreatedAtUrl(Operation operation) {
+        Link linkForCreatedResource = GetLinkForCreatedResource(operation);
+        if (linkForCreatedResource != null)
+        {
+            return linkForCreatedResource.getOperationId();
+        }
+        return  "";
     }
 
     public String ResourceCreatedAtId(Operation operation)
     {
-        return GetLinkForCreatedResource(operation).getParameters().values().iterator().next();
+        Link linkForeCreatedResource = GetLinkForCreatedResource(operation);
+        if(linkForeCreatedResource!=null)
+        {
+            return linkForeCreatedResource.getParameters().values().iterator().next();
+        }
+
+        else return "";
     }
 
     private Link GetLinkForCreatedResource(Operation operation)
     {
-        return operation.getResponses().get("201").getLinks().get("location");
+        if(operation.getResponses().get("201")!=null) {
+            return operation.getResponses().get("201").getLinks().get("location");
+        }
+        else return null;
     }
 }
