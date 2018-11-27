@@ -4747,4 +4747,9 @@ public class DefaultCodegen implements CodegenConfig {
         this.enablePostProcessFile = enablePostProcessFile;
     }
 
+    @Override
+    public String toBasePathWithoutHost(String basePathWithoutHost) {
+        return basePathWithoutHost;
+    }
+
 }
