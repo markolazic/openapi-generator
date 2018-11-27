@@ -440,7 +440,7 @@ public class CodegenOperation {
         {
             return linkForCreatedResource.getOperationId();
         }
-        return  "";
+        return  null;
     }
 
     public String ResourceCreatedAtId(Operation operation)
@@ -451,7 +451,7 @@ public class CodegenOperation {
             return linkForeCreatedResource.getParameters().values().iterator().next();
         }
 
-        else return "";
+        else return null;
     }
 
     private Link GetLinkForCreatedResource(Operation operation)

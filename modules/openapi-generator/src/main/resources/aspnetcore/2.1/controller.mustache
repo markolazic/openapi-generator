@@ -35,7 +35,7 @@ namespace {{packageName}}.Controllers
         { {{#isGet}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
             {{/isGet}}{{#isPost}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToCreatedOrError("{{createdAtUrl}}", returned => runtimeExpressionInterpreter.GetValue(returned, "{{resourceCreatedAtId}}"));
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{#createdAtUrl}}.ToCreatedOrError("{{createdAtUrl}}", returned => runtimeExpressionInterpreter.GetValue(returned, "{{resourceCreatedAtId}}"));{{/createdAtUrl}}{{^createdAtUrl}}.ToCreatedOrError();{{/createdAtUrl}}
             {{/isPost}}{{#isDelete}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
             {{/isDelete}}{{#isPut}}
