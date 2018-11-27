@@ -136,6 +136,14 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     }
 
     @Override
+    public String toBasePathWithoutHost(String basePathWithoutHost) {
+        if(basePathWithoutHost.startsWith("/"))
+            return basePathWithoutHost.substring(1);
+
+        return super.toBasePathWithoutHost(basePathWithoutHost);
+    }
+
+    @Override
     public void preprocessOpenAPI(OpenAPI openAPI) {
         super.preprocessOpenAPI(openAPI);
         URL url = URLPathUtils.getServerURL(openAPI);
@@ -248,6 +256,9 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
                 LOGGER.warn("Normalized " + original + " to " + operation.path + ". Please verify generated source.");
             }
         }
+
+        if(operation.path.startsWith("/"))
+            operation.path = operation.path.substring(1);
 
         // Converts, for example, PUT to HttpPut for controller attributes
         operation.httpMethod = "Http" + operation.httpMethod.substring(0, 1) + operation.httpMethod.substring(1).toLowerCase(Locale.ROOT);

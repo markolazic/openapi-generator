@@ -261,4 +261,5 @@ public interface CodegenConfig {
 
     public void setEnablePostProcessFile(boolean isEnablePostProcessFile);
 
+    String toBasePathWithoutHost(String basePathWithoutHost);
 }
