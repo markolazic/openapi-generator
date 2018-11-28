@@ -22,6 +22,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.links.Link;
 import io.swagger.v3.oas.models.media.Schema;
+import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.utils.URLPathUtils;
 import org.slf4j.Logger;
@@ -296,5 +297,15 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public CodegenOperation fromOperation(String path, String httpMethod, Operation operation, Map<String, Schema> schemas) {
         return super.fromOperation(path, httpMethod, operation, schemas);
 
+    }
+
+    @Override
+    public String toEnumVarName(String value, String datatype) {
+        String name = super.toEnumVarName(value, datatype);
+
+        if(name.endsWith("Enum"))
+            name = name.substring(0, name.length()-"Enum".length());
+
+        return name;
     }
 }
