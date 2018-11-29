@@ -5,8 +5,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using FluentValidation;
+using Newtonsoft.Json;{{#useFluentValidators}}
+using FluentValidation;{{/useFluentValidators}}
 
 {{#models}}
 {{#model}}
@@ -131,7 +131,7 @@ namespace {{packageName}}.Models
         #pragma warning restore 1591
         #endregion Operators
     }
-
+{{#useFluentValidators}}
     public class {{classname}}Validator : AbstractValidator<{{classname}}>
     {
         public {{classname}}Validator()
@@ -173,7 +173,7 @@ namespace {{packageName}}.Models
             {{/pattern}}
             {{/vars}}
         }
-    }
+    }{{/useFluentValidators}}
 
 {{/isEnum}}
 
