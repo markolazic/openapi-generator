@@ -456,7 +456,7 @@ public class CodegenOperation {
 
     private Link GetLinkForCreatedResource(Operation operation)
     {
-        if(operation.getResponses().get("201")!=null) {
+        if(operation.getResponses().get("201")!=null && operation.getResponses().get("201").getLinks()!=null) {
             return operation.getResponses().get("201").getLinks().get("location");
         }
         else return null;
