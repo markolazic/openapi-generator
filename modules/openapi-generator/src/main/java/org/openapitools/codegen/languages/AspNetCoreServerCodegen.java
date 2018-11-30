@@ -42,6 +42,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public static final String USE_SWASHBUCKLE = "useSwashbuckle";
     public static final String USE_FLUENT_VALIDATORS = "useFluentValidators";
     public static final String ASPNET_CORE_VERSION = "aspnetCoreVersion";
+    private static final String ASYNC_SERVER = "asyncServer";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -53,6 +54,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
+
+    private boolean asyncServer = false;
 
     public AspNetCoreServerCodegen() {
         super();
@@ -117,7 +120,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         addSwitch(USE_FLUENT_VALIDATORS,
                 "Render fluent validators as part of the model files.",
                 useFluentValidators);
-
+        addSwitch(ASYNC_SERVER, "Set to true to enable the generation of async routes/endpoints.", this.asyncServer);
     }
 
     @Override
@@ -231,6 +234,11 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         supportingFiles.add(new SupportingFile("wwwroot" + File.separator + "openapi-original.mustache",
                 packageFolder + File.separator + "wwwroot", "openapi-original.json"));
+        if (additionalProperties.containsKey(ASYNC_SERVER)) {
+            setAsyncServer(convertPropertyToBooleanAndWriteBack(ASYNC_SERVER));
+        } else {
+            additionalProperties.put(ASYNC_SERVER, this.asyncServer);
+        }
     }
 
     public void setPackageGuid(String packageGuid) {
@@ -319,5 +327,9 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             name = name.substring(0, name.length()-"Enum".length());
 
         return name;
+    }
+
+    public void setAsyncServer(boolean asyncServer) {
+        this.asyncServer = asyncServer;
     }
 }

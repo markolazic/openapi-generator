@@ -30,7 +30,7 @@ namespace {{packageName}}.Controllers
 {{#operation}}
         [{{httpMethod}}]
         [Route("{{{path}}}", Name = "{{operationId}}")]
-        public {{#asyncServer}}await Task<IActionResult>
+        public {{#asyncServer}}async Task<IActionResult>
             {{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
         { {{#isGet}}
             return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
