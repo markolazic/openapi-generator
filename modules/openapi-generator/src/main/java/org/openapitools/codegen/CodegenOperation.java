@@ -40,7 +40,7 @@ public class CodegenOperation {
             isRestfulIndex, isRestfulShow, isRestfulCreate, isRestfulUpdate, isRestfulDestroy,
             isRestful, isDeprecated, isCallbackRequest, isGet, isPost, isPut, isPatch, isDelete;
     public String path, operationId, returnType, httpMethod, returnBaseType,
-            returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse, createdAtUrl,resourceCreatedAtId;
+            returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse, createdAtUrl,resourceCreatedAtId, returnErrorType;
     public CodegenDiscriminator discriminator;
     public List<Map<String, String>> consumes, produces, prioritizedContentTypes;
     public CodegenParameter bodyParam;

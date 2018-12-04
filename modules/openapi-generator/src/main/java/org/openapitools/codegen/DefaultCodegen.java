@@ -27,7 +27,6 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.callbacks.Callback;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.headers.Header;
-import io.swagger.v3.oas.models.links.Link;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Content;
@@ -82,7 +81,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.openapitools.codegen.utils.StringUtils.camelize;
-import static org.openapitools.codegen.utils.StringUtils.underscore;
 import static org.openapitools.codegen.utils.StringUtils.escape;
 
 public class DefaultCodegen implements CodegenConfig {
@@ -2295,6 +2293,10 @@ public class DefaultCodegen implements CodegenConfig {
                 if (Boolean.TRUE.equals(r.isFile) && Boolean.TRUE.equals(r.isDefault)) {
                     op.isResponseFile = Boolean.TRUE;
                 }
+
+                if(op.returnErrorType == null && isDefinedErrorObjectType(response.getContent(), key)) {
+                    op.returnErrorType = getErrorObjectType(response);
+                }
             }
             op.responses.get(op.responses.size() - 1).hasMore = false;
 
@@ -2524,6 +2526,16 @@ public class DefaultCodegen implements CodegenConfig {
         }
 
         return op;
+    }
+
+    private  boolean isDefinedErrorObjectType(Content content, String statusCode) {
+        return content != null && (statusCode.startsWith("4") || statusCode.startsWith("5"));
+    }
+
+    private String getErrorObjectType(ApiResponse response) {
+        Schema errorResponseSchema = ModelUtils.getSchemaFromResponse(response);
+        CodegenProperty errorCm = fromProperty("response", errorResponseSchema);
+        return errorCm.dataType;
     }
 
     public boolean isParameterNameUnique(CodegenParameter p, List<CodegenParameter> parameters) {
