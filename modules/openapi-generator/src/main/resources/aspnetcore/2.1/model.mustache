@@ -27,7 +27,7 @@ namespace {{packageName}}.Models
         {{#required}}
         [Required]
         {{/required}}
-        [DataMember(Name="{{baseName}}")]
+        [DataMember(Name="{{name}}")]
         {{#isEnum}}
         public {{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}?{{/isContainer}}{{/isEnum}} {{name}} { get; set; }
         {{/isEnum}}

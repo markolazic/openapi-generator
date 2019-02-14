@@ -20,40 +20,30 @@ namespace {{packageName}}.Controllers
     public class {{classname}} : ControllerBase
     {
         private readonly I{{classname}}Service service;
-        private readonly OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter;
-        public {{classname}}(I{{classname}}Service service, OpenApiRuntimeExpressionInterpreter runtimeExpressionInterpreter)
+        public {{classname}}(I{{classname}}Service service)
         {
             this.service = service;
-            this.runtimeExpressionInterpreter = runtimeExpressionInterpreter;
         }
 
 {{#operation}}
         [{{httpMethod}}]
         [Route("{{{path}}}", Name = "{{operationId}}")]
-        public {{#asyncServer}}async Task<IActionResult>
-            {{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        { {{#isGet}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToOkOrError();
-            {{/isGet}}{{#isPost}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{#createdAtUrl}}.ToCreatedOrError("{{createdAtUrl}}", returned => runtimeExpressionInterpreter.GetValue(returned, "{{resourceCreatedAtId}}"));{{/createdAtUrl}}{{^createdAtUrl}}.ToCreatedOrError();{{/createdAtUrl}}
-            {{/isPost}}{{#isDelete}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();
-            {{/isDelete}}{{#isPut}}
-            var error = {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
-            if(error != null)
-            return UnprocessableEntity(error); //???
-
-            return NoContent();{{/isPut}}{{#isPatch}}
-            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).ToNoContentOrError();{{/isPatch}}
+        public {{#asyncServer}}Task<IActionResult>{{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        {
+            return {{#asyncServer}}await {{/asyncServer}}service.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
         }
 {{/operation}}
     }
 
     public interface I{{classname}}Service
     {
-        {{#operation}}
-        {{#asyncServer}}{{#returnType}}Task<Option<{{returnType}}, {{#returnErrorType}}ErrorResult<{{&returnErrorType}}>{{/returnErrorType}}{{^returnErrorType}}ErrorResult{{/returnErrorType}}>>{{/returnType}}{{^returnType}}Task{{/returnType}}{{/asyncServer}}{{^asyncServer}}{{#returnType}}Option<{{returnType}}, {{#returnErrorType}}ErrorResult<{{&returnErrorType}}>{{/returnErrorType}}{{^returnErrorType}}ErrorResult{{/returnErrorType}}>{{/returnType}}{{^returnType}}void{{/returnType}} {{/asyncServer}} {{operationId}}({{>paramsList}});{{#hasMore}}
-            {{/hasMore}}{{/operation}}
+{{#operation}}
+        /// <summary>
+        /// Returns <see cref="{{returnType}}"/> in happy-path in body. Returns <see cref="{{&returnErrorType}}"/> on error.
+        /// </summary>
+        {{#asyncServer}}Task<IActionResult>{{/asyncServer}}{{^asyncServer}}IActionResult{{/asyncServer}} {{operationId}}({{>paramsList}});{{#hasMore}}
+            {{/hasMore}}
+{{/operation}}
     }
 
     {{/operations}}
