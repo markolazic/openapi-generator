@@ -775,4 +775,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
----
+## [8 - Building]
+-------
+
+To build this locally use a command line similar to this (in the root of the cloned repo):
+```
+mvn -DskipTests=true clean install
+```
